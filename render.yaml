@@ -1,0 +1,11 @@
+services:
+  - type: worker
+    name: sqe-bot-v43
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0

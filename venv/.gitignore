@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pkl
+*.log
+.env
+sqe_v43_state.pkl
+pattern_memory_v43.pkl
+sqe_v42_state.pkl
+pattern_memory_v42.pkl
+sqe_v41_state.pkl
+pattern_memory_v41.pkl
