@@ -3345,6 +3345,31 @@ class TradeSetupBuilder:
 # ============================================================================
 class ConflictResolver:
     @staticmethod
+    def _passes_quality_threshold(
+        sym: str, trade: Optional[TradeSetup]
+    ) -> Tuple[bool, str]:
+        """
+        Enforce symbol-category quality thresholds without removing
+        any existing feature:
+        - Volatility symbols: 5/5 only
+        - Boom/Crash symbols: 4/5 and above
+        - Other categories: unchanged (no extra threshold)
+        """
+        if trade is None:
+            return False, "no_trade"
+        if trade.quality is None:
+            return False, "missing_quality"
+
+        stars = trade.quality.stars
+        cat = _cat(sym)
+
+        if cat == "vol" and stars < 5:
+            return False, "vol_requires_5_stars"
+        if cat in ("boom", "crash") and stars < 4:
+            return False, "boom_crash_requires_4_stars"
+        return True, "quality_ok"
+
+    @staticmethod
     def resolve(
         sym:   str,
         mc:    MCResult,
@@ -3352,10 +3377,13 @@ class ConflictResolver:
         trade: Optional[TradeSetup],
     ) -> Tuple[Optional[TradeSetup], bool, str]:
         profile = effective_profile(sym)
+        quality_ok, quality_reason = (
+            ConflictResolver._passes_quality_threshold(sym, trade)
+        )
+        if not quality_ok:
+            return None, False, quality_reason
         if spike is None:
             return trade, True, "no_spike"
-        if trade is None:
-            return None, False, "no_trade"
         spike_is_bull = spike.direction == "up"
         trade_is_bull = trade.direction == "BUY"
         if spike_is_bull == trade_is_bull:
