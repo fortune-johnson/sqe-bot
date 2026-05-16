@@ -3352,7 +3352,7 @@ class ConflictResolver:
         Enforce symbol-category quality thresholds without removing
         any existing feature:
         - Volatility symbols: 5/5 only
-        - Boom symbols: exactly 4/5
+        - Boom symbols: 4/5 and above
         - Crash symbols: 4/5 and above
         - Other categories: unchanged (no extra threshold)
         """
@@ -3366,8 +3366,8 @@ class ConflictResolver:
 
         if cat == "vol" and stars < 5:
             return False, "vol_requires_5_stars"
-        if cat == "boom" and stars != 4:
-            return False, "boom_requires_exactly_4_stars"
+        if cat == "boom" and stars < 4:
+            return False, "boom_requires_4plus_stars"
         if cat == "crash" and stars < 4:
             return False, "crash_requires_4plus_stars"
         return True, "quality_ok"
