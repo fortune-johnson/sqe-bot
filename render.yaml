@@ -1,11 +1,31 @@
 services:
-  - type: worker
-    name: sqe-bot-v43
-    env: python
-    region: oregon
+  - type: web
+    name: sqe-bot
+    runtime: python
     plan: free
-    buildCommand: pip install -r requirements.txt
+    region: oregon
+    branch: main
+    buildCommand: pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
     startCommand: python main.py
+    healthCheckPath: /
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.11.9
+      - key: TELEGRAM_TOKEN
+        sync: false
+      - key: DERIV_APP_ID
+        value: "1089"
+      - key: RENDER
+        value: "true"
+      - key: PORT
+        value: "10000"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: MPLBACKEND
+        value: "Agg"
+      - key: NUMBA_CACHE_DIR
+        value: "/tmp/numba_cache"
+    disk:
+      name: sqe-data
+      mountPath: /app/data
+      sizeGB: 1
