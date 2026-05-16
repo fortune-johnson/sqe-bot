@@ -5509,6 +5509,18 @@ class SQEBotV45:
                 mc.edge_score, S0, tup, tdn,
             )
 
+        # ⚠️ CRITICAL: Skip sends entirely if trade failed quality threshold
+        if not trade_valid and (reason in ("boom_requires_4plus_stars", 
+                                            "crash_requires_4plus_stars",
+                                            "vol_requires_5_stars")):
+            await _safe_send_message(
+                ctx.bot, cid,
+                f"*Analysis for {fname}:* Quality threshold not met.\n"
+                f"Stars required but signal quality insufficient.\n"
+                f"Reason: {reason}",
+            )
+            return
+
         note    = self.pm.note(sym, mc.horizon)
         st      = self._state(cid)
         img     = await loop.run_in_executor(
